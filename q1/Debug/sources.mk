@@ -112,9 +112,4 @@ PDE_DEPS__QUOTED :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 . \
-driverlib \
-driverlib/ccs/Debug \
-driverlib/ewarm/Exe \
-driverlib/gcc \
-driverlib/rvmdk \
 

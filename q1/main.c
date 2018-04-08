@@ -73,35 +73,35 @@ int main(void)
                                              SYSCTL_CFG_VCO_480), 120000000);
 
     // Enable the GPIO port that is used for the on-board LED.
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
 
     // Check if the peripheral access is enabled.
-    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPION));
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPION));
 
     // Enable the GPIO pin for the LED (PN0).  Set the direction as output, and
     // enable the GPIO pin for digital function.
-    GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, GPIO_PIN_0);
+    MAP_GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, GPIO_PIN_0);
 
     // Enable the peripherals used by this example.
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 
     // Enable processor interrupts.
-    IntMasterEnable();
+    MAP_IntMasterEnable();
 
     // Set GPIO A0 and A1 as UART pins.
-    GPIOPinConfigure(GPIO_PA0_U0RX);
-    GPIOPinConfigure(GPIO_PA1_U0TX);
-    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+    MAP_GPIOPinConfigure(GPIO_PA0_U0RX);
+    MAP_GPIOPinConfigure(GPIO_PA1_U0TX);
+    MAP_GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
     // Configure the UART for 115,200, 8-N-1 operation.
-    UARTConfigSetExpClk(UART0_BASE, g_ui32SysClock, 115200,
+    MAP_UARTConfigSetExpClk(UART0_BASE, g_ui32SysClock, 115200,
                             (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
                              UART_CONFIG_PAR_NONE));
 
     // Enable the UART interrupt.
-    IntEnable(INT_UART0);
-    UARTIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
+    MAP_IntEnable(INT_UART0);
+    MAP_UARTIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
 
     bzero(print_string, sizeof(print_string));
     sprintf(print_string, "Project for: Homework 5\t6-April-2018\r\n");
@@ -120,15 +120,15 @@ int main(void)
         UARTSend((uint8_t *) print_string, strlen(print_string));
 
         // Turn on the LED.
-        GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, GPIO_PIN_0);
+        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, GPIO_PIN_0);
 
         // Delay for a bit.
-        SysCtlDelay(5000000);
+        MAP_SysCtlDelay(5000000);
 
         // Turn off the LED.
-        GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, 0x0);
+        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, 0x0);
 
         // Delay for a bit.
-        SysCtlDelay(5000000);
+        MAP_SysCtlDelay(5000000);
     }
 }
