@@ -40,37 +40,24 @@
 #include "driverlib/rom_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
+#include "utils/uartstdio.h"
 
-
-//****************************************************************************
-// System clock rate in Hz.
-//****************************************************************************
-uint32_t g_ui32SysClock;
-
-//*****************************************************************************
-// Send a string to the UART.
-//*****************************************************************************
-void UARTSend(const uint8_t *pui8Buffer, uint32_t ui32Count)
-{
-    // Loop while there are more characters to send.
-    while(ui32Count--)
-    {
-        // Write the next character to the UART.
-        UARTCharPut(UART0_BASE, *pui8Buffer++);
-    }
-}
+#define CLOCK_FREQUENCY     120000000
+#define UART_PORT_0         0
+#define UART_BAUD_RATE      115200
+#define FREQUENCY_HZ        2
+#define DELAY_FACTOR        (3 * 2 * FREQUENCY_HZ)
 
 int main(void)
 {
-    volatile uint32_t ui32Loop;
-    char print_string[128];
+    uint32_t g_ui32SysClock;
     uint32_t blink_count = 0;
 
     // Set the clocking to run directly from the crystal at 120MHz.
     g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
                                              SYSCTL_OSC_MAIN |
                                              SYSCTL_USE_PLL |
-                                             SYSCTL_CFG_VCO_480), 120000000);
+                                             SYSCTL_CFG_VCO_480), CLOCK_FREQUENCY);
 
     // Enable the GPIO port that is used for the on-board LED.
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
@@ -86,49 +73,32 @@ int main(void)
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 
-    // Enable processor interrupts.
-    MAP_IntMasterEnable();
-
     // Set GPIO A0 and A1 as UART pins.
     MAP_GPIOPinConfigure(GPIO_PA0_U0RX);
     MAP_GPIOPinConfigure(GPIO_PA1_U0TX);
     MAP_GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
-    // Configure the UART for 115,200, 8-N-1 operation.
-    MAP_UARTConfigSetExpClk(UART0_BASE, g_ui32SysClock, 115200,
-                            (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
-                             UART_CONFIG_PAR_NONE));
+    UARTStdioConfig(UART_PORT_0, UART_BAUD_RATE, g_ui32SysClock);
 
-    // Enable the UART interrupt.
-    MAP_IntEnable(INT_UART0);
-    MAP_UARTIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
-
-    bzero(print_string, sizeof(print_string));
-    sprintf(print_string, "Project for: Homework 5\t6-April-2018\r\n");
-
-    // Printing the above string.
-    UARTSend((uint8_t *) print_string, strlen(print_string));
-
+    // Printing the string.
+    UARTprintf("Project for: Homework-5     6-April-2018\r\n");
 
     // Loop forever.
     while(1)
     {
-        bzero(print_string, sizeof(print_string));
-        sprintf(print_string, "Blink Count: %u\r\n", ++blink_count);
-
-        // Printing the above string.
-        UARTSend((uint8_t *) print_string, strlen(print_string));
+        // Printing the count;
+        UARTprintf("Blink Count: %u\r\n", ++blink_count);
 
         // Turn on the LED.
         MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, GPIO_PIN_0);
 
         // Delay for a bit.
-        MAP_SysCtlDelay(5000000);
+        MAP_SysCtlDelay(g_ui32SysClock / DELAY_FACTOR);
 
         // Turn off the LED.
         MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, 0x0);
 
         // Delay for a bit.
-        MAP_SysCtlDelay(5000000);
+        MAP_SysCtlDelay(g_ui32SysClock / DELAY_FACTOR);
     }
 }
