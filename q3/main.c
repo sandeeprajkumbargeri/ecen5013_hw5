@@ -7,24 +7,7 @@
 //          with the use of timer callback handler, event group notifications
 //          and semaphores.
 //
-// Copyright (c) 2013-2016 Texas Instruments Incorporated.  All rights reserved.
-// Software License Agreement
-//
-// Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
-// TI and/or its suppliers, and is protected under applicable copyright
-// laws. You may not combine this software with "viral" open-source
-// software in order to form a larger program.
-//
-// THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
-// NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
-// NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
-// CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
-// DAMAGES, FOR ANY REASON WHATSOEVER.
-//
-// This is part of revision 2.1.3.156 of the EK-TM4C1294XL Firmware Package.
-//
+// Written for ECEN 5013 at University of Colorado Boulder in Spring 2018
 //*****************************************************************************
 
 #include <stdint.h>
@@ -207,6 +190,7 @@ int main(void)
     // Create task for handling event notifications
     xTaskCreate(Task_EventHandler, "Task for handling notifications from the first two tasks", 1000, NULL, 1, NULL );
 
+    //Create timer for 4hz and register the timer_callback handler
     timer = xTimerCreate("4Hz Timer", pdMS_TO_TICKS(TIMER_PERIOD), pdTRUE, (void *)&timer_id, timer_callback);
     xTimerStart(timer, portMAX_DELAY);
 
