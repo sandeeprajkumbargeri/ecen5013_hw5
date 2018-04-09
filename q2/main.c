@@ -142,6 +142,7 @@ int main(void)
     // Create task for 4Hz Blinking LED
     xTaskCreate(Task_4Hz, "LED 4Hz", 1000, NULL, 1, NULL );
 
+    //Create timer for 4hz and register the timer_callback handler
     timer = xTimerCreate("4Hz Timer", pdMS_TO_TICKS(TIMER_PERIOD), pdTRUE, (void *)&timer_id, timer_callback);
     xTimerStart(timer, portMAX_DELAY);
 
